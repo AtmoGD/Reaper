@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Reaper
+  - Wall
+  - Ground
+  - Top
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - Reaper
+  - Wall
+  - Ground
+  - Top
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: BG_5
+    uniqueID: 3045362461
+    locked: 0
+  - name: BG_4
+    uniqueID: 35621757
+    locked: 0
+  - name: BG_3
+    uniqueID: 3165848011
+    locked: 0
+  - name: BG_2
+    uniqueID: 3657561373
+    locked: 0
+  - name: BG_1
+    uniqueID: 701997953
+    locked: 0
+  - name: Ground Layer 1
+    uniqueID: 818561919
+    locked: 0
+  - name: Player
+    uniqueID: 791334947
+    locked: 0
