@@ -6,58 +6,58 @@ public class ReaperJump : ReaperMoving
 {
     public ReaperJump(ReaperController _reaper) : base(_reaper) { }
 
-    
-    // private float verticalMultiplier = 0f;
+    private float timeSinceActive = 0f;
 
-
-    public override void Enter(float useTimeSinceStart = 0f)
+    public override void Enter()
     {
         base.Enter();
 
+        this.Reaper.UseJump();
+
+        Debug.Log("Reaper Jump");
         
-        // verticalMultiplier = 0f; 
-        // this.Reaper.rb.AddForce(Vector2.up * this.Reaper.jumpForce, ForceMode2D.Impulse);
-        this.targetDirection += Vector2.up * this.Reaper.jumpForce * this.Reaper.Inputs.JumpStrength;
-        // this.Reaper.ChangeState(this.Reaper.MovingState);
+        timeSinceActive = 0f;
     }
 
-    public override void FrameUpdate()
-    {
-        if (this.TimeSinceStart >= Reaper.jumpTime)
+    public override void FrameUpdate() {
+
+        if (this.Reaper.Inputs.Jump && this.Reaper.CanJump)
         {
+            this.Reaper.ChangeState(this.Reaper.JumpingState);
+            return;
+        }
+
+        timeSinceActive += Time.deltaTime;
+
+        if (this.Reaper.OnGround && this.Reaper.JumpCooldown <= 0f)
+        {
+            Debug.Log("Reaper is on ground and is not moving up");
             this.Reaper.ChangeState(this.Reaper.MovingState);
             return;
         }
 
-        // if (this.Reaper.OnGround && this.TimeSinceStart > 0.1f)
-        // {
-        //     this.Reaper.ChangeState(this.Reaper.MovingState);
-        //     return;
-        // }
+        if(timeSinceActive >= this.Reaper.jumpTime) {
+            Debug.Log("Reaper has jumped for " + timeSinceActive + " seconds");
+            this.Reaper.ChangeState(this.Reaper.MovingState);
+            return;
+        }
     }
 
     public override void PhysicsUpdate()
     {
-        // this.MoveHorizontal();
-        // this.horizontalMultiplier = this.Reaper.accelerationCurve.Evaluate(this.timeSinceStart);
-        // float verticalMultiplier = this.Reaper.jumpCurve.Evaluate(this.TimeSinceStart);
-        // Vector2 dir = Vector2.right * horizontalMultiplier + Vector2.up * verticalMultiplier;
-        // Debug.Log("Jump: " + dir);
-        // Debug.Log("Jump: " + verticalMultiplier);
-        // this.MoveHorizontal(horizontalMultiplier);
-        // this.MoveVertical(verticalMultiplier * this.Reaper.jumpForce);
-
-        // this.targetDirection.x = Mathf.Clamp(this.targetDirection.x, -Reaper.maxSpeed, Reaper.maxSpeed);
-
-        // this.MoveVertical(this.Reaper.jumpForce * multiplier);
-
         base.PhysicsUpdate();
+
+        this.Reaper.Move(Vector2.up, 
+                        this.Reaper.jumpSpeed * this.Reaper.jumpCurve.Evaluate(timeSinceActive), 
+                        this.Reaper.jumpLerpSpeed,
+                        this.Reaper.maxSpeed,
+                        this.Reaper.maxJumpSpeed);
     }
 
     public override void Exit()
     {
-        this.Reaper.UseJump();
-        InputController.Instance.EndJump();
+        
+
         base.Exit();
     }
 }

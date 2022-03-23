@@ -6,7 +6,7 @@ public class ReaperFalling : ReaperMoving
 {
     public ReaperFalling(ReaperController _reaper) : base(_reaper) { }
 
-    public override void Enter(float useTimeSinceStart = 0f)
+    public override void Enter()
     {
         base.Enter();
     }
@@ -19,7 +19,7 @@ public class ReaperFalling : ReaperMoving
             return;
         }
         
-        if (this.Reaper.OnGround && this.TimeSinceStart > 0.1f)
+        if (this.Reaper.OnGround)
         {
             this.Reaper.ChangeState(this.Reaper.MovingState);
             return;
@@ -28,13 +28,13 @@ public class ReaperFalling : ReaperMoving
 
     public override void PhysicsUpdate()
     {
-        // this.MoveHorizontal();
-
-        float verticalMultiplier = this.Reaper.fallCurve.Evaluate(this.TimeSinceStart);
-
-        this.MoveVertical(-this.Reaper.fallSpeed * verticalMultiplier);
-
         base.PhysicsUpdate();
+
+        this.Reaper.Move(Vector2.down, 
+                        this.Reaper.fallSpeed, 
+                        this.Reaper.fallLerpSpeed,
+                        this.Reaper.maxSpeed,
+                        Mathf.Infinity);
     }
 
     public override void Exit()

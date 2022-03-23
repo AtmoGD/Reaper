@@ -12,33 +12,27 @@ public class ReaperController : MonoBehaviour
     [SerializeField] public LayerMask groundLayer;
     [SerializeField] public float groundCheckRadius = 0.1f;
 
-    // [SerializeField] public Transform topCheck;
-    // [SerializeField] public LayerMask topLayer;
-    // [SerializeField] public float topCheckRadius = 0.1f;
-
-    [SerializeField] public float movementThreshold = 0.1f;
 
     [Header("Reaper Stats")]
-    [SerializeField] public float lerpMultiplier = 1000f;
     [Header("Running")]
-    // [SerializeField] public float accelerationLerpSpeed = 5f;
-    // [SerializeField] public float decelerationLerpSpeed = 5f;
-
-    [SerializeField] public AnimationCurve accelerationCurve;
-    [SerializeField] public float accelerationMultiplier = 500f;
-    // [SerializeField] public float maxSpeed = 5000f;
-
+    [SerializeField] public float speed = 500f;
+    [SerializeField] public float maxSpeed = 500f;
+    [SerializeField] public float movementLerpSpeed = 10f;
+    [SerializeField] public float movementThreshold = 0.1f;
     [Header("Jumping")]
     [SerializeField] public AnimationCurve jumpCurve;
-    [SerializeField] public float jumpForce = 2;
+    [SerializeField] public float jumpSpeed = 2;
+    [SerializeField] public float maxJumpSpeed = 0.5f;
+    [SerializeField] public float jumpLerpSpeed = 10f;
     [SerializeField] public float jumpTime = 0.5f;
     [SerializeField] public float JumpTimeout = 0.1f;
     [SerializeField] public int jumpCount = 2;
 
     [Header("Falling")]
-    [SerializeField] public AnimationCurve fallCurve;
-    [SerializeField] public float fallSpeed = 2.5f;
     [SerializeField] public float coyotyTime = 0.5f;
+    [SerializeField] public float fallSpeed = 1f;
+    [SerializeField] public float maxFallSpeed = 10f;
+    [SerializeField] public float fallLerpSpeed = 10f;
 
     public InputData Inputs { get; private set; }
     public ReaperState CurrentState { get; private set; }
@@ -65,21 +59,12 @@ public class ReaperController : MonoBehaviour
         get
         {
             bool onGround = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-
             if (onGround && JumpCooldown < 0f)
                 ResetJump();
 
             return Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         }
     }
-
-    // public bool OnTop
-    // {
-    //     get
-    //     {
-    //         return Physics2D.OverlapCircle(topCheck.position, topCheckRadius, topLayer);
-    //     }
-    // }
 
     private void Start()
     {
@@ -116,7 +101,18 @@ public class ReaperController : MonoBehaviour
     {
         this.CurrentState?.Exit();
         this.CurrentState = _newState;
+        // print("Changed state to " + _newState.GetType().Name);
         this.CurrentState?.Enter();
+    }
+
+    public void Move(Vector2 _dir, float _speed, float _lerpSpeed = 10f, float _clampX = 5f, float _clampY = 5f) {
+        Vector2 targetDirection = rb.velocity + _dir  * _speed;
+        Vector2 newVelocity = Vector2.Lerp(rb.velocity, targetDirection, Time.deltaTime * _lerpSpeed);
+
+        newVelocity.x = Mathf.Clamp(newVelocity.x, -_clampX, _clampX);
+        newVelocity.y = Mathf.Clamp(newVelocity.y, -_clampY, _clampY);
+
+        this.rb.velocity = newVelocity;
     }
 
     public void SetJumpCooldown()
@@ -128,23 +124,20 @@ public class ReaperController : MonoBehaviour
     {
         if (this.JumpsLeft > 0) {
             this.JumpsLeft--;
-            this.JumpCooldown = this.JumpTimeout;
-            // InputController.Instance.EndJump();
-            Debug.Log("Used jump. Jumps left: " + this.JumpsLeft);
+            SetJumpCooldown();
+            InputController.Instance.UseJump();
         }
     }
 
     public void ResetJump()
     {
-        // if (JumpCooldown <= 0f)
         this.JumpsLeft = jumpCount;
-        Debug.Log("Reset Jump. Jumps left: " + this.JumpsLeft);
     }
 
+#if UNITY_EDITOR
     private void OnDrawGizmos() {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
-        // Gizmos.color = Color.blue;
-        // Gizmos.DrawWireSphere(topCheck.position, topCheckRadius);
     }
+#endif
 }

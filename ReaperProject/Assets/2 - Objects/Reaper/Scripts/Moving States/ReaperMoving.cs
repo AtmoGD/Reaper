@@ -4,21 +4,11 @@ using UnityEngine;
 
 public class ReaperMoving : ReaperState
 {
-    // protected float lastMovingSinceStart = 0f;
-    // protected float horizontalMultiplier = 0f;
-    protected Vector2 targetDirection = Vector2.zero;
     private float coyotyTimer = 0f;
 
-    public ReaperMoving(ReaperController _reaper) : base(_reaper)
-    {
-        this.targetDirection = Reaper.rb.position;
-    }
+    public ReaperMoving(ReaperController _reaper) : base(_reaper) { }
 
-    public override void Enter(float useTimeSinceStart = 0f)
-    {
-        base.Enter(useTimeSinceStart);
-        this.targetDirection = Vector2.zero;
-    }
+    public override void Enter() { }
 
     public override void FrameUpdate()
     {
@@ -53,39 +43,11 @@ public class ReaperMoving : ReaperState
 
     public override void PhysicsUpdate()
     {
-        this.TimeSinceStart += Time.fixedDeltaTime;
-
-        float multiplier = this.Reaper.accelerationCurve.Evaluate(this.TimeSinceStart);
-
-        this.MoveHorizontal(multiplier);
-
-        this.Move();
-    }
-
-    protected void MoveInDirection(Vector2 _dir)
-    {
-        this.targetDirection += _dir;
-    }
-
-    protected void MoveHorizontal(float _multiplier = 1)
-    {
-        // this.Reaper.LastMovementStartTime = _multiplier;
-        float amount = this.Reaper.Inputs.Dir.x * this.Reaper.accelerationMultiplier * _multiplier;
-        // Debug.Log("Hori: " + amount);
-        this.targetDirection += Vector2.right * amount * Time.deltaTime;
-    }
-
-    protected void MoveVertical(float _amount)
-    {
-        float amount = _amount;
-        // Debug.Log("Vert: " + amount);
-        this.targetDirection += Vector2.up * amount * Time.deltaTime;
-    }
-
-    private void Move()
-    {
-        this.Reaper.rb.velocity = Vector2.Lerp(this.Reaper.rb.velocity, this.targetDirection, this.Reaper.lerpMultiplier * Time.fixedDeltaTime);
-        this.targetDirection = Vector2.zero;
+        this.Reaper.Move(Vector2.right * this.Reaper.Inputs.Dir.x, 
+                        this.Reaper.speed, 
+                        this.Reaper.movementLerpSpeed,
+                        this.Reaper.maxSpeed,
+                        Mathf.Infinity);
     }
 
     public override void Exit() { }

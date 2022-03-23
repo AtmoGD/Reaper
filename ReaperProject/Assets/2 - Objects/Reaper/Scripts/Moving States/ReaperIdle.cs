@@ -6,9 +6,7 @@ public class ReaperIdle : ReaperState
 {
     public ReaperIdle(ReaperController _reaper) : base(_reaper) { }
 
-    public override void Enter(float useTimeSinceStart = 0f) {
-        base.Enter(0f);
-     }
+    public override void Enter() { }
 
     public override void FrameUpdate()
     {
@@ -23,12 +21,11 @@ public class ReaperIdle : ReaperState
             this.Reaper.ChangeState(this.Reaper.MovingState);
             return;
         }
-
     }
 
     public override void PhysicsUpdate()
     {
-        this.Reaper.rb.velocity = Vector2.Lerp(this.Reaper.rb.velocity, Vector2.down, this.Reaper.lerpMultiplier * Time.deltaTime);
+        this.Reaper.Move(-this.Reaper.rb.velocity, 1f);
     }
 
     public override void Exit() { }
