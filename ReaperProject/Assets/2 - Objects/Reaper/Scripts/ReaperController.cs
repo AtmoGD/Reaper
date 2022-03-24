@@ -16,23 +16,23 @@ public class ReaperController : MonoBehaviour
     [Header("Reaper Stats")]
     [Header("Running")]
     [SerializeField] public float speed = 500f;
-    [SerializeField] public float maxSpeed = 500f;
-    [SerializeField] public float movementLerpSpeed = 10f;
-    [SerializeField] public float movementThreshold = 0.1f;
+    // [SerializeField] public float maxSpeed = 500f;
+    // [SerializeField] public float movementLerpSpeed = 10f;
+    // [SerializeField] public float movementThreshold = 0.1f;
     [Header("Jumping")]
-    [SerializeField] public AnimationCurve jumpCurve;
-    [SerializeField] public float jumpSpeed = 2;
-    [SerializeField] public float maxJumpSpeed = 0.5f;
-    [SerializeField] public float jumpLerpSpeed = 10f;
-    [SerializeField] public float jumpTime = 0.5f;
-    [SerializeField] public float JumpTimeout = 0.1f;
+    // [SerializeField] public AnimationCurve jumpCurve;
+    // [SerializeField] public float jumpSpeed = 2;
+    // [SerializeField] public float maxJumpSpeed = 0.5f;
+    // [SerializeField] public float jumpLerpSpeed = 10f;
+    // [SerializeField] public float jumpTime = 0.5f;
+    // [SerializeField] public float JumpTimeout = 0.1f;
     [SerializeField] public int jumpCount = 2;
 
     [Header("Falling")]
-    [SerializeField] public float coyotyTime = 0.5f;
-    [SerializeField] public float fallSpeed = 1f;
-    [SerializeField] public float maxFallSpeed = 10f;
-    [SerializeField] public float fallLerpSpeed = 10f;
+    // [SerializeField] public float coyotyTime = 0.5f;
+    [SerializeField] public float gravity = 1f;
+    // [SerializeField] public float fallLerpSpeed = 10f;
+    // [SerializeField] public float maxFallSpeed = 0.5f;
 
     public InputData Inputs { get; private set; }
     public ReaperState CurrentState { get; private set; }
@@ -105,28 +105,47 @@ public class ReaperController : MonoBehaviour
         this.CurrentState?.Enter();
     }
 
-    public void Move(Vector2 _dir, float _speed, float _lerpSpeed = 10f, float _clampX = 5f, float _clampY = 5f) {
-        Vector2 targetDirection = rb.velocity + _dir  * _speed;
-        Vector2 newVelocity = Vector2.Lerp(rb.velocity, targetDirection, Time.deltaTime * _lerpSpeed);
+    public void MoveHorizontal(float _speed)
+    {
+        Vector2 newVelocity = rb.velocity + Vector2.right * _speed;
+        // newVelocity.x = Mathf.Clamp(newVelocity.x, -maxSpeed, maxSpeed);
 
-        newVelocity.x = Mathf.Clamp(newVelocity.x, -_clampX, _clampX);
-        newVelocity.y = Mathf.Clamp(newVelocity.y, -_clampY, _clampY);
+        this.Move(newVelocity);
+    }
 
-        this.rb.velocity = newVelocity;
+    public void Move(Vector2 _newVel) {
+        // this.rb.velocity = Vector2.Lerp(this.rb.velocity, _newVel, movementLerpSpeed * Time.deltaTime);
+    }
+
+    public void Jump()
+    {
+        if (this.CanJump)
+        {
+            this.JumpsLeft--;
+            // this.JumpCooldown = this.JumpTimeout;
+            // this.rb.AddForce(Vector2.up * this.jumpSpeed, ForceMode2D.Impulse);
+        }
+    }
+
+    public void ApplyGravity()
+    {
+        Vector2 newVelocity = rb.velocity + Vector2.down * this.gravity;
+        // newVelocity.y = Mathf.Clamp(newVelocity.y, -maxFallSpeed, maxFallSpeed);
+        this.Move(newVelocity);
     }
 
     public void SetJumpCooldown()
     {
-        this.JumpCooldown = this.JumpTimeout;
+        // this.JumpCooldown = this.JumpTimeout;
     }
 
     public void UseJump()
     {
-        if (this.JumpsLeft > 0) {
-            this.JumpsLeft--;
-            SetJumpCooldown();
-            InputController.Instance.UseJump();
-        }
+        if (this.JumpsLeft <= 0) return;
+
+        this.JumpsLeft--;
+        SetJumpCooldown();
+        InputController.Instance.UseJump();
     }
 
     public void ResetJump()
@@ -135,7 +154,8 @@ public class ReaperController : MonoBehaviour
     }
 
 #if UNITY_EDITOR
-    private void OnDrawGizmos() {
+    private void OnDrawGizmos()
+    {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }

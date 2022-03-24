@@ -12,6 +12,8 @@ public class ReaperJump : ReaperMoving
     {
         base.Enter();
 
+        this.Reaper.Jump();
+
         this.Reaper.UseJump();
 
         Debug.Log("Reaper Jump");
@@ -36,22 +38,22 @@ public class ReaperJump : ReaperMoving
             return;
         }
 
-        if(timeSinceActive >= this.Reaper.jumpTime) {
-            Debug.Log("Reaper has jumped for " + timeSinceActive + " seconds");
-            this.Reaper.ChangeState(this.Reaper.MovingState);
-            return;
-        }
+        // if(timeSinceActive >= this.Reaper.jumpTime) {
+        //     Debug.Log("Reaper has jumped for " + timeSinceActive + " seconds");
+        //     this.Reaper.ChangeState(this.Reaper.MovingState);
+        //     return;
+        // }
     }
 
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
 
-        this.Reaper.Move(Vector2.up, 
-                        this.Reaper.jumpSpeed * this.Reaper.jumpCurve.Evaluate(timeSinceActive), 
-                        this.Reaper.jumpLerpSpeed,
-                        this.Reaper.maxSpeed,
-                        this.Reaper.maxJumpSpeed);
+        // this.Reaper.Move(Vector2.up, 
+        //                 this.Reaper.jumpSpeed * this.Reaper.jumpCurve.Evaluate(timeSinceActive), 
+        //                 this.Reaper.jumpLerpSpeed,
+        //                 this.Reaper.maxSpeed,
+        //                 this.Reaper.maxJumpSpeed);
     }
 
     public override void Exit()

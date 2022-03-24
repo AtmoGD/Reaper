@@ -25,7 +25,9 @@ public class ReaperIdle : ReaperState
 
     public override void PhysicsUpdate()
     {
-        this.Reaper.Move(-this.Reaper.rb.velocity, 1f);
+        this.Reaper.ApplyGravity();
+
+        this.Reaper.Move(Vector2.zero);
     }
 
     public override void Exit() { }

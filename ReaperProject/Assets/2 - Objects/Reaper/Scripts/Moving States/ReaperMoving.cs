@@ -19,35 +19,36 @@ public class ReaperMoving : ReaperState
         }
 
 
-        if (this.Reaper.OnGround)
-        {
-            coyotyTimer = this.Reaper.coyotyTime;
-        }
-        else
-        {
-            coyotyTimer -= Time.deltaTime;
+        // if (this.Reaper.OnGround)
+        // {
+        //     coyotyTimer = this.Reaper.coyotyTime;
+        // }
+        // else
+        // {
+        //     coyotyTimer -= Time.deltaTime;
             
-            if(coyotyTimer <= 0f)
-            {
-                this.Reaper.ChangeState(this.Reaper.FallingState);
-                return;
-            }
-        }
+        //     if(coyotyTimer <= 0f)
+        //     {
+        //         this.Reaper.ChangeState(this.Reaper.FallingState);
+        //         return;
+        //     }
+        // }
 
-        if (this.Reaper.Inputs.Dir.magnitude <= this.Reaper.movementThreshold)
-        {
-            this.Reaper.ChangeState(this.Reaper.IdleState);
-            return;
-        }
+        // if (this.Reaper.Inputs.Dir.magnitude <= this.Reaper.movementThreshold)
+        // {
+        //     this.Reaper.ChangeState(this.Reaper.IdleState);
+        //     return;
+        // }
     }
 
     public override void PhysicsUpdate()
     {
-        this.Reaper.Move(Vector2.right * this.Reaper.Inputs.Dir.x, 
-                        this.Reaper.speed, 
-                        this.Reaper.movementLerpSpeed,
-                        this.Reaper.maxSpeed,
-                        Mathf.Infinity);
+        this.Reaper.MoveHorizontal(this.Reaper.speed * this.Reaper.Inputs.Dir.x);
+        // this.Reaper.Move(Vector2.right * this.Reaper.Inputs.Dir.x, 
+        //                 this.Reaper.speed, 
+        //                 this.Reaper.movementLerpSpeed,
+        //                 this.Reaper.maxSpeed,
+        //                 Mathf.Infinity);
     }
 
     public override void Exit() { }

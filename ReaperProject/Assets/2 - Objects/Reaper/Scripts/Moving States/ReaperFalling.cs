@@ -30,11 +30,7 @@ public class ReaperFalling : ReaperMoving
     {
         base.PhysicsUpdate();
 
-        this.Reaper.Move(Vector2.down, 
-                        this.Reaper.fallSpeed, 
-                        this.Reaper.fallLerpSpeed,
-                        this.Reaper.maxSpeed,
-                        Mathf.Infinity);
+        this.Reaper.ApplyGravity();
     }
 
     public override void Exit()
