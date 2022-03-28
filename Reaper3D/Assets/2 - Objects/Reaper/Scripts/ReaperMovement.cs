@@ -21,6 +21,9 @@ public class ReaperMovement : ReaperState
         if(this.Reaper.Inputs == null) return;
 
         float speed = this.Reaper.speed * this.Reaper.Inputs.Dir.x * Time.fixedDeltaTime;
+
+        this.Reaper.animator.SetFloat("Speed", Mathf.Abs(speed));
+        
         if (speed == 0)
         {
             this.Reaper.SetTargetVelocityHorizontal(0f, this.Reaper.stopSpeed * Time.fixedDeltaTime);
@@ -43,6 +46,7 @@ public class ReaperMovement : ReaperState
             this.Reaper.ChangeState(this.Reaper.BatState);
             return;
         }
+        
         if(this.Reaper.JumpsLeft < this.Reaper.jumpCount && this.Reaper.OnGround)
         {
             this.Reaper.ResetJump();

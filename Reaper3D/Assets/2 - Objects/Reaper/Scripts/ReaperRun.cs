@@ -25,6 +25,12 @@ public class ReaperRun : ReaperMovement
     {
         base.CheckState();
 
+        // if(this.Reaper.Inputs.Bats)
+        // {
+        //     this.Reaper.ChangeState(this.Reaper.BatState);
+        //     return;
+        // }
+
         if (this.Reaper.rb.velocity.x <= 0.1f && this.Reaper.Inputs.Dir.x <= -0.1f)
         {
             this.Reaper.ChangeState(this.Reaper.IdleState);

@@ -11,6 +11,8 @@ public class ReaperController : MonoBehaviour
     [SerializeField] public Transform groundCheck;
     [SerializeField] public LayerMask groundLayer;
     [SerializeField] public float groundCheckRadius = 0.1f;
+    [SerializeField] public float rotatingSpeed = 10f;
+    [SerializeField] public float rotatingBackSpeed = 0.1f;
 
 
     [Header("Reaper Stats")]
@@ -63,7 +65,8 @@ public class ReaperController : MonoBehaviour
     {
         get
         {
-            bool onGround = Physics.Raycast(this.groundCheck.position, Vector3.down * this.groundCheckRadius, this.groundCheckRadius, this.groundLayer);
+            bool onGround = Physics.CheckSphere(this.groundCheck.position, this.groundCheckRadius, this.groundLayer);
+            // bool onGround = Physics.Raycast(this.groundCheck.position, Vector3.down * this.groundCheckRadius, this.groundCheckRadius, this.groundLayer);
 
             // if (onGround && rb.velocity.y <= 0)
             //     ResetJump();
@@ -102,8 +105,19 @@ public class ReaperController : MonoBehaviour
     private void FixedUpdate()
     {
         this.CurrentState?.PhysicsUpdate();
+
+        RotateModel();
     }
 
+    private void RotateModel()
+    {
+        // animator.transform.forward = Vector3.Lerp(animator.transform.forward, Vector3.right * this.rb.velocity.x, Time.deltaTime * rotatingSpeed);
+        if(this.rb.velocity.magnitude > 0.1f)
+            animator.transform.forward = Vector3.Slerp(animator.transform.forward, Vector3.right * this.rb.velocity.x, Time.deltaTime * rotatingSpeed);
+        else
+            animator.transform.forward = Vector3.Slerp(animator.transform.forward, Vector3.back, Time.deltaTime * rotatingBackSpeed);
+        // animator.transform.forward = Vector3.Slerp(animator.transform.forward, Vector3.right * this.rb.velocity.x, Time.deltaTime * rotatingSpeed);
+    }
     public void ChangeState(ReaperState _newState)
     {
         this.CurrentState?.Exit();
@@ -170,8 +184,8 @@ public class ReaperController : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawRay(this.groundCheck.position, Vector3.down * this.groundCheckRadius);
-        // Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
+        // Gizmos.DrawRay(this.groundCheck.position, Vector3.down * this.groundCheckRadius);
+        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
 #endif
 }
