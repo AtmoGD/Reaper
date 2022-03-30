@@ -6,15 +6,15 @@ public class ReaperJump : ReaperMovement
 {
     public ReaperJump(ReaperController _reaper) : base(_reaper) { }
 
-    private float jumpTime;
-    private float jumpTimeMin;
+    // private float timeSinceActive;
+    // private float jumpTimeMin;
 
     public override void Enter() {
-        
+        base.Enter();
 
-        jumpTime = 0f;
+        // timeSinceActive = 0f;
 
-        jumpTimeMin = this.Reaper.jumpTimeMin;
+        // jumpTimeMin = this.Reaper.jumpTimeMin;
 
         this.Reaper.UseJump();
      }
@@ -22,8 +22,8 @@ public class ReaperJump : ReaperMovement
     public override void FrameUpdate()
     {
         base.FrameUpdate();
-        // Debug.Log("Jump");
-        jumpTime += Time.deltaTime;
+
+        // timeSinceActive += Time.deltaTime;
     }
 
     public override void PhysicsUpdate()
@@ -35,30 +35,30 @@ public class ReaperJump : ReaperMovement
 
     public override void Exit() { 
         InputController.Instance.UseJump();
+        base.Exit();
     }
 
     public override void CheckState()
     {
-        if(!this.Reaper.Inputs.Jump && jumpTime > jumpTimeMin)
+        if(!this.Reaper.Inputs.Jump && timeSinceActive > this.Reaper.jumpTimeMin)
         {
             this.Reaper.ChangeState(this.Reaper.FallState);
             return;
         }
 
-        if (this.Reaper.OnGround && jumpTime > jumpTimeMin)
+        if(timeSinceActive >= this.Reaper.jumpTime)
         {
-            Debug.Log("Idle");
+            this.Reaper.ChangeState(this.Reaper.FallState);
+            return;
+        }
+
+        if (this.Reaper.OnGround && timeSinceActive > this.Reaper.jumpTimeMin)
+        {
             // THIS IS GONIG TO BE THE LAND STATE
             this.Reaper.ChangeState(this.Reaper.RunState);
             return;
         }
 
-        if(jumpTime >= this.Reaper.jumpTime)
-        {
-            Debug.Log("jumpTime");
-            this.Reaper.ChangeState(this.Reaper.FallState);
-            return;
-        }
 
     }
 }

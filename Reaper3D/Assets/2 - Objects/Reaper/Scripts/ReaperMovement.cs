@@ -8,22 +8,27 @@ public class ReaperMovement : ReaperState
 
     public override void Enter()
     {
-        // base.Enter();
+        base.Enter();
     }
 
     public override void FrameUpdate()
     {
         base.FrameUpdate();
+
+        if (Mathf.Abs(this.Reaper.Inputs.Dir.x) >= 0.3) {
+            this.Reaper.RotateModel(Mathf.Abs(this.Reaper.rb.velocity.x * this.Reaper.rotatingSpeed));
+            
+        }
     }
 
     public override void PhysicsUpdate()
     {
-        if(this.Reaper.Inputs == null) return;
+        if (this.Reaper.Inputs == null) return;
 
         float speed = this.Reaper.speed * this.Reaper.Inputs.Dir.x * Time.fixedDeltaTime;
 
-        this.Reaper.animator.SetFloat("Speed", Mathf.Abs(speed));
-        
+        this.Reaper.animator.SetFloat("SpeedX", Mathf.Abs(speed));
+
         if (speed == 0)
         {
             this.Reaper.SetTargetVelocityHorizontal(0f, this.Reaper.stopSpeed * Time.fixedDeltaTime);
@@ -41,13 +46,13 @@ public class ReaperMovement : ReaperState
 
     public override void CheckState()
     {
-        if(this.Reaper.Inputs.Bats)
+        if (this.Reaper.Inputs.Bats)
         {
             this.Reaper.ChangeState(this.Reaper.BatState);
             return;
         }
-        
-        if(this.Reaper.JumpsLeft < this.Reaper.jumpCount && this.Reaper.OnGround)
+
+        if (this.Reaper.JumpsLeft < this.Reaper.jumpCount && this.Reaper.OnGround)
         {
             this.Reaper.ResetJump();
         }

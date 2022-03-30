@@ -6,7 +6,9 @@ public class ReaperRun : ReaperMovement
 {
     public ReaperRun(ReaperController _reaper) : base(_reaper) { }
 
-    public override void Enter() { }
+    public override void Enter() {
+        base.Enter();
+     }
 
     public override void FrameUpdate()
     {
@@ -19,19 +21,15 @@ public class ReaperRun : ReaperMovement
         base.PhysicsUpdate();
     }
 
-    public override void Exit() { }
+    public override void Exit() {
+        base.Exit();
+     }
 
     public override void CheckState()
     {
         base.CheckState();
 
-        // if(this.Reaper.Inputs.Bats)
-        // {
-        //     this.Reaper.ChangeState(this.Reaper.BatState);
-        //     return;
-        // }
-
-        if (this.Reaper.rb.velocity.x <= 0.1f && this.Reaper.Inputs.Dir.x <= -0.1f)
+        if (Mathf.Abs(this.Reaper.rb.velocity.x) <= 0.1f && Mathf.Abs(this.Reaper.Inputs.Dir.x) <= 0.1f)
         {
             this.Reaper.ChangeState(this.Reaper.IdleState);
             return;

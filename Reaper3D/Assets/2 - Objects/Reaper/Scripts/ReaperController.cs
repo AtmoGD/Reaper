@@ -4,21 +4,29 @@ using UnityEngine;
 
 public class ReaperController : MonoBehaviour
 {
+    [Header("Debugging")]
+    [SerializeField] private bool debug = false;
+    [SerializeField] private TMPro.TMP_Text debugText;
+
+
     [Header("Inputs")]
     [SerializeField] public Rigidbody rb;
     [SerializeField] public Animator animator;
-
+    [SerializeField] public GameObject model;
     [SerializeField] public Transform groundCheck;
     [SerializeField] public LayerMask groundLayer;
     [SerializeField] public float groundCheckRadius = 0.1f;
-    [SerializeField] public float rotatingSpeed = 10f;
-    [SerializeField] public float rotatingBackSpeed = 0.1f;
 
 
     [Header("Reaper Stats")]
+    [Header("Idle")]
+    [SerializeField] public float rotateBackAfter = 2f;
+    [SerializeField] public float rotatingBackSpeed = 0.1f;
+
     [Header("Running")]
     [SerializeField] public float speed = 5f;
     [SerializeField] public float maxSpeed = 500f;
+    [SerializeField] public float rotatingSpeed = 10f;
     [SerializeField] public float stopSpeed = 0.1f;
 
     [Header("Jumping")]
@@ -27,7 +35,6 @@ public class ReaperController : MonoBehaviour
     [SerializeField] public int jumpCount = 2;
     [SerializeField] public float jumpTime = 0.1f;
     [SerializeField] public float jumpTimeMin = 0.06f;
-    // [SerializeField] public float jumpTimeout = 0.2f;
 
     [Header("Falling")]
     [SerializeField] public float fallSpeed = 1f;
@@ -56,7 +63,7 @@ public class ReaperController : MonoBehaviour
     {
         get
         {
-            return this.JumpsLeft > 0; 
+            return this.JumpsLeft > 0;
         }
     }
 
@@ -65,13 +72,7 @@ public class ReaperController : MonoBehaviour
     {
         get
         {
-            bool onGround = Physics.CheckSphere(this.groundCheck.position, this.groundCheckRadius, this.groundLayer);
-            // bool onGround = Physics.Raycast(this.groundCheck.position, Vector3.down * this.groundCheckRadius, this.groundCheckRadius, this.groundLayer);
-
-            // if (onGround && rb.velocity.y <= 0)
-            //     ResetJump();
-
-            return onGround;
+            return Physics.CheckSphere(this.groundCheck.position, this.groundCheckRadius, this.groundLayer);
         }
     }
 
@@ -97,38 +98,47 @@ public class ReaperController : MonoBehaviour
 
     private void Update()
     {
+
+#if UNITY_EDITOR
+        if (this.debug)
+        {
+            this.debugText.text = CurrentState.ToString();
+        }
+#endif
+
         Inputs = InputController.Instance.InputData;
 
         this.CurrentState?.FrameUpdate();
+
+        // RotateModel();
     }
 
     private void FixedUpdate()
     {
         this.CurrentState?.PhysicsUpdate();
-
-        RotateModel();
     }
 
-    private void RotateModel()
+    public void RotateModel(float _speed = 10f, bool _rotateBack = false)
     {
-        // animator.transform.forward = Vector3.Lerp(animator.transform.forward, Vector3.right * this.rb.velocity.x, Time.deltaTime * rotatingSpeed);
-        if(this.rb.velocity.magnitude > 0.1f)
-            animator.transform.forward = Vector3.Slerp(animator.transform.forward, Vector3.right * this.rb.velocity.x, Time.deltaTime * rotatingSpeed);
+        if (_rotateBack)
+        {
+            model.transform.forward = Vector3.Slerp(model.transform.forward, -Vector3.forward, Time.deltaTime * _speed);
+        }
         else
-            animator.transform.forward = Vector3.Slerp(animator.transform.forward, Vector3.back, Time.deltaTime * rotatingBackSpeed);
-        // animator.transform.forward = Vector3.Slerp(animator.transform.forward, Vector3.right * this.rb.velocity.x, Time.deltaTime * rotatingSpeed);
+        {
+            model.transform.forward = Vector3.Slerp(model.transform.forward, this.rb.transform.right * this.rb.velocity.x, Time.deltaTime * _speed);
+        }
     }
+    
     public void ChangeState(ReaperState _newState)
     {
         this.CurrentState?.Exit();
         this.CurrentState = _newState;
-        // print("Changed state to " + _newState.GetType().Name);
         this.CurrentState?.Enter();
     }
 
     public void MoveHorizontal(float _speed)
     {
-        // print("Moving horizontal" + _speed);
         Vector3 newVelocity = rb.velocity + Vector3.right * _speed;
         newVelocity.x = Mathf.Clamp(newVelocity.x, -maxSpeed, maxSpeed);
         rb.velocity = newVelocity;
@@ -136,7 +146,6 @@ public class ReaperController : MonoBehaviour
 
     public void MoveVertical(float _speed)
     {
-        // Debug.Log("MoveVertical");
         Vector3 newVelocity = rb.velocity + Vector3.up * _speed;
         newVelocity.y = Mathf.Clamp(newVelocity.y, -fallSpeed, maxJumpSpeed);
         rb.velocity = newVelocity;
@@ -161,13 +170,6 @@ public class ReaperController : MonoBehaviour
         rb.velocity = newVelocity;
     }
 
-    public void ApplyGravity()
-    {
-        // Vector2 newVelocity = rb.velocity + Vector2.down * this.gravity;
-        // // newVelocity.y = Mathf.Clamp(newVelocity.y, -maxFallSpeed, maxFallSpeed);
-        // this.Move(newVelocity);
-    }
-
     public void UseJump()
     {
         if (this.JumpsLeft <= 0) return;
@@ -184,7 +186,6 @@ public class ReaperController : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        // Gizmos.DrawRay(this.groundCheck.position, Vector3.down * this.groundCheckRadius);
         Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
 #endif

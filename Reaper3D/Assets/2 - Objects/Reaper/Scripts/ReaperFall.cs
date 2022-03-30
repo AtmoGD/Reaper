@@ -8,7 +8,7 @@ public class ReaperFall : ReaperMovement
 
     public override void Enter() { 
         base.Enter();
-        Debug.Log("Fall");
+        // Debug.Log("Fall");
     }
 
     public override void FrameUpdate()
@@ -24,7 +24,9 @@ public class ReaperFall : ReaperMovement
         this.Reaper.MoveVertical(-this.Reaper.fallSpeed * Time.fixedDeltaTime);
     }
 
-    public override void Exit() { }
+    public override void Exit() {
+        base.Exit();
+     }
 
     public override void CheckState()
     {
